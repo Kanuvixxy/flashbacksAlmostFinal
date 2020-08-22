@@ -105,7 +105,7 @@ function setup() {
   light.addImage("energy", lightImg);
 
   //create sprite for life icon
-  life = createSprite(windowWidth/2-25, windowHeight/3-50);
+   life = createSprite(windowWidth/2-25, windowHeight/3-50);
   life.addImage("live", lifeImg);
 
   //create sprites for various time machine parts 
@@ -204,6 +204,7 @@ function draw() {
    time1.x = windowWidth/3 + 20;
    time1.addImage("time1", t1Img);
    time1.lifetime = -1;
+   partSound.play(); 
  }
 
  if(energy_count === 40){
@@ -218,6 +219,7 @@ function draw() {
    time2.x = windowWidth/3 + 400;
    time2.addImage("time2", t2Img);
    time2.lifetime = -1;
+   partSound.play();
  }
 
  if(energy_count === 60){
@@ -227,6 +229,11 @@ function draw() {
  if(player.collide(time3)){
    time3.lifetime = 0;
    part_count = part_count - 1;
+   time3 = createSprite(windowWidth/3 + 210, windowHeight/3 - 120, 1, 1);
+   time3.x = windowWidth/3 + 400;
+   time3.addImage("time3", t3Img);
+   time3.lifetime = -1;
+   partSound.play();
  }
 
  if(energy_count === 80){
@@ -236,6 +243,11 @@ function draw() {
 if(player.collide(time4)){
   time4.lifetime = 0;
   part_count = part_count - 1;
+  time4 = createSprite(windowWidth/3 + 210, windowHeight/3 - 120, 1, 1);
+  time4.x = windowWidth/3 + 400;
+  time4.addImage("time4", t4Img);
+  time4.lifetime = -1;
+  partSound.play();
 }
   createZombie();
 
@@ -270,8 +282,8 @@ if(part_count === 0){
   }
 
   if(lives === 0){
-    gameState = 2;
-  }
+  gameState = 2;
+ }
 
   if(gameState === 2){
     player.visible = false;
@@ -291,9 +303,10 @@ if(part_count === 0){
        gameState = 1;
     }
   }
+  
   // if(keyWentDown("r")){
   //   gameState = 1;
-  // }
+  //}
 
   if(gameState === 3){
     background(backg2);
