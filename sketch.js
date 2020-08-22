@@ -178,6 +178,7 @@ function draw() {
     player.x = player.x - 5;
   } else if(keyDown("space") && player.y >= windowHeight/2+265){
     player.velocityY = -18;
+    jumpSound.play();
   } 
   if(mousePressedOver(invis_canvas) && frameCount % 45 === 0){
     laser = createSprite(gun.x+37, gun.y-4, 10, 10);
@@ -255,6 +256,7 @@ if(player.collide(time4)){
     laser.visible = false;
     zombie.visible = false;
     zombie.lifetime = 0;
+    zombieDie.play();
   }
   if(laser.collide(zombieGroup)){
     energy_count = energy_count + 5;
@@ -279,6 +281,7 @@ if(part_count === 0){
     zombieGroup.lifetime = 0;
     zombieGroup.destroyEach();
     lives = lives - 1;
+    lifeLose.play();
   }
 
   if(lives === 0){
