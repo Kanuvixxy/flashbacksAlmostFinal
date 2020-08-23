@@ -9,8 +9,17 @@ var up, down, left, right;
 var up_arr, down_arr, left_arr, right_arr;
 
 var zombie, zomAnima, zombieGroup;
+var knight, knightAnima, knightGroup;
+var dinosaur, dino1, dino2, dino3, dinosaurGroup;
 
-var time1, time1Puzzle, time2, time2Puzzle, time3, time3Puzzle, time4, time4Puzzle;
+var time1,
+  time1Puzzle,
+  time2,
+  time2Puzzle,
+  time3,
+  time3Puzzle,
+  time4,
+  time4Puzzle;
 var t1Img, t2Img, t3Img, t4Img;
 
 var form, butt1, butt2, butt3, butt4;
@@ -32,13 +41,19 @@ var energy_count = 0;
 var part_count = 4;
 
 //defining function preload
-function preload(){
+function preload() {
   //load background image
   backg = loadImage("./images/bg2.png");
   backg2 = loadImage("./images/bg.jpg");
 
-  //load zombie animation 
-  zomAnima = loadAnimation("./anime/1f.png", "./anime/2f.png", "./anime/3f.png", "./anime/4f.png", "./anime/5f.png");
+  //load zombie animation
+  zomAnima = loadAnimation(
+    "./anime/1f.png",
+    "./anime/2f.png",
+    "./anime/3f.png",
+    "./anime/4f.png",
+    "./anime/5f.png"
+  );
 
   //load gun and laser image
   gunImg = loadImage("./images/gun.png");
@@ -69,7 +84,9 @@ function preload(){
   lasermusic = loadSound("./sounds/laser.mp3");
   lifeLose = loadSound("./sounds/SPOILER_losealife.mp3");
   zombieDie = loadSound("./sounds/SPOILER_preview.mp3");
-  gameOverSound = loadSound("./sounds/SPOILER_Game_Over_2_Super_Mario_-_Sound_Effect_HD.mp3");
+  gameOverSound = loadSound(
+    "./sounds/SPOILER_Game_Over_2_Super_Mario_-_Sound_Effect_HD.mp3"
+  );
   jumpSound = loadSound("./sounds/SPOILER_jump_2.mp3");
   partSound = loadSound("./sounds/SPOILER_pickupp.mp3");
 }
@@ -78,693 +95,818 @@ function preload(){
 function setup() {
   //create sprite for canvas and invisible canvas (for shoot)
   var canvas = createCanvas(windowWidth, windowHeight);
-  invis_canvas = createSprite(windowWidth/2, 0, windowWidth, windowHeight*2);
+  invis_canvas = createSprite(
+    windowWidth / 2,
+    0,
+    windowWidth,
+    windowHeight * 2
+  );
 
   //create sprite for player
-  player = createSprite(windowWidth/3-170, windowHeight/2-360, 40, 70);
+  player = createSprite(windowWidth / 3 - 170, windowHeight / 2 - 360, 40, 70);
   player.shapeColor = "white";
 
   //create sprite for invisible ground (to stop player from falling)
-  invis_ground = createSprite(windowWidth/2, windowHeight/2+374, displayWidth, 10);
+  invis_ground = createSprite(
+    windowWidth / 2,
+    windowHeight / 2 + 374,
+    displayWidth,
+    10
+  );
   invis_ground.visible = false;
 
   //create sprite for gun and laser
   gun = createSprite(0, 0, 10, 10);
-  laser = createSprite(gun.x+37, gun.y-4, 10, 10);
+  laser = createSprite(gun.x + 37, gun.y - 4, 10, 10);
 
   //create sprite for control help
-  up = createSprite(windowWidth/19-37, windowHeight/3-170, 10, 10);
-  down = createSprite(windowWidth/19-37, windowHeight/3-135, 10, 10);
-  left = createSprite(windowWidth/19-37, windowHeight/3-100, 10, 10);
-  right = createSprite(windowWidth/19-37, windowHeight/3-65, 10, 10);
+  up = createSprite(windowWidth / 19 - 37, windowHeight / 3 - 170, 10, 10);
+  down = createSprite(windowWidth / 19 - 37, windowHeight / 3 - 135, 10, 10);
+  left = createSprite(windowWidth / 19 - 37, windowHeight / 3 - 100, 10, 10);
+  right = createSprite(windowWidth / 19 - 37, windowHeight / 3 - 65, 10, 10);
 
   //create sprite for for energy icon
-  light = createSprite(windowWidth/5-20, windowHeight/3-200);
+  light = createSprite(windowWidth / 5 - 20, windowHeight / 3 - 200);
   light.addImage("energy", lightImg);
 
   //create sprite for life icon
-  life = createSprite(windowWidth/2-25, windowHeight/3-50);
+  life = createSprite(windowWidth / 2 - 25, windowHeight / 3 - 50);
   life.addImage("live", lifeImg);
 
-  //create sprites for various time machine parts 
-  time1 = createSprite(windowWidth+200, windowHeight/2+355, 10, 10);
-  time2 = createSprite(windowWidth+100, windowHeight/2+330, 10, 10);
-  time3 = createSprite(windowWidth+300, windowHeight/2+325, 10, 10);
-  time4 = createSprite(windowWidth+400, windowHeight/2+355, 10, 10);
+  //create sprites for various time machine parts
+  time1 = createSprite(windowWidth + 200, windowHeight / 2 + 355, 10, 10);
+  time2 = createSprite(windowWidth + 100, windowHeight / 2 + 330, 10, 10);
+  time3 = createSprite(windowWidth + 300, windowHeight / 2 + 325, 10, 10);
+  time4 = createSprite(windowWidth + 400, windowHeight / 2 + 355, 10, 10);
 
   //create buttons
-  butt1 = select('#butt1');
-  butt2 = select('#butt2');
-  butt3 = select('#butt3');
-  butt4 = select('#butt4');
+  butt1 = select("#butt1");
+  butt2 = select("#butt2");
+  butt3 = select("#butt3");
+  butt4 = select("#butt4");
 
   //create group for zombie spawnning
   zombieGroup = new Group();
- }
+  knightGroup = new Group();
+  dinosaurGroup = new Group();
+}
 
 //define function draw
 function draw() {
-    //background
-    background(backg);
+  //background
+  background(backg);
 
-    //invisible canvas invisibility
-    invis_canvas.visible = false;
-  
-  //menu display  
-  if(gameState === 0){
-    form = new Start;
+  //invisible canvas invisibility
+  invis_canvas.visible = false;
+
+  //menu display
+  if (gameState === 0) {
+    form = new Start();
     form.display();
   }
-  
+
   //Easy mode Gameplay
-  if(gameState === 1){
-  //controls  
-  textFont(font);
-  textSize(30);
-  fill("white");
-  text("Controls:", windowWidth/49, windowHeight/3-225);
-  
-  //controls images
-  up.addImage("lol", up_arr);
-  fill("white");
-  text("- Shoot", windowWidth/19-10, windowHeight/3-160);
-  down.addImage("lmao", down_arr);
-  fill("white");
-  text("- Jump", windowWidth/19-10, windowHeight/3-125);
-  left.addImage("coffin", left_arr);
-  fill("white");
-  text("- Move Right", windowWidth/19-10, windowHeight/3-90);
-  right.addImage("wide_putin", right_arr);
-  fill("white");
-  text("- Move Left", windowWidth/19-10, windowHeight/3-55);
-  
-  //add gun image
-  gun.addImage("duh", gunImg);
-
-  //make player collide with invisible ground
-  player.collide(invis_ground);
-
-  //
-  if(keyDown("d")){
-    player.x = player.x + 5;
-} 
-
-  else if(keyDown("a")){
-    player.x = player.x - 5;
-} 
-
-  else if(keyDown("space") && player.y >= windowHeight/2+265){
-    player.velocityY = -18;
-    jumpSound.play();
-} 
-  
-  if(mousePressedOver(invis_canvas) && frameCount % 45 === 0){
-    laser = createSprite(gun.x+37, gun.y-4, 10, 10);
-    laser.addImage("bruh", laserImg);
-    laser.velocityX = 8;
-    lasermusic.play();
-}
-  
-  gun.x = player.x + 23;
-  gun.y = player.y + 5;
-
-  player.velocityY = player.velocityY + 0.8;
-
-  laser.setCollider("rectangle", 19, 0, 125, 30);
-
-  if(energy_count === 20){
-    time1.x = windowWidth/3+230;
-    time1.addImage("part1", t1Img);
-  }
- if(player.collide(time1)){
-   time1.lifetime = 0;
-   part_count = part_count - 1;
-   partSound.play();
-   time1Puzzle = createSprite(windowWidth/2 + 717, windowHeight/3 - 165, 1, 1);
-   time1Puzzle.addImage("time1", t1Img);
-   time1Puzzle.lifetime = -1; 
- }
-
- if(energy_count === 40){
-   time2.x = windowWidth/5-100;
-   time2.addImage("part2", t2Img);
- }
-
- if(player.collide(time2)){
-   time2.lifetime = 0;
-   part_count = part_count - 1;
-   partSound.play();
-   time2Puzzle = createSprite(windowWidth/2 + 660, windowHeight/3 - 140, 1, 1);
-   time2Puzzle.addImage("time2", t2Img);
-   time2Puzzle.lifetime = -1;
- }
-
- if(energy_count === 60){
-   time3.x = windowWidth - 100;
-   time3.addImage("part3", t3Img);
- }
- if(player.collide(time3)){
-   time3.lifetime = 0;
-   part_count = part_count - 1;
-   partSound.play();
-   time3Puzzle = createSprite(windowWidth/2 + 717, windowHeight/3 - 170, 1, 1);
-   time3Puzzle.addImage("time3", t3Img);
-   time3Puzzle.lifetime = -1;
- }
-
- if(energy_count === 80){
-   time4.x = windowWidth-500;
-   time4.addImage("part4", t4Img);
-}
-
-if(player.collide(time4)){
-  time4.lifetime = 0;
-  part_count = part_count - 1;
-  partSound.play();
-  time4Puzzle = createSprite(windowWidth/2 + 717, windowHeight/3 - 220, 1, 1);
-  time4Puzzle.addImage("time4", t4Img);
-  time4Puzzle.lifetime = -1;
-}
-
-if(laser.isTouching(zombieGroup)){
-  laser.visible = false;
-  zombie.visible = false;
-  zombie.lifetime = 0;
-  zombieDie.play();
-}
-
-if(laser.collide(zombieGroup)){
-  energy_count = energy_count + 5;
-}
-
-  createZombie();
-
-  textSize(30);
-  text(lives, windowWidth/2, windowHeight/3-40);
-
-  textSize(50);
-  text(energy_count, light.x+18, light.y+12);
-
-  textSize(30);
-  text("Parts Missing : " + part_count, windowWidth-370, windowHeight/3-196);
-
-  drawSprites();
-
-if(part_count === 0){
-  gameState = 3;
-}
-
-  if(zombieGroup.collide(player)){
-    zombieGroup.lifetime = 0;
-    zombieGroup.destroyEach();
-    lives = lives - 1;
-    lifeLose.play();
-  }
-
-  if(lives === 0){
-  gameState = 2;
- }
-}
-
- if(gameState === 3){
-  background(backg2);
-  fill("black");
-
-  textSize(30);
-  textFont(font);
-
-  text("You Win!", windowWidth/2-100, windowHeight/2);
-  text("You are back to your normal life!", windowWidth/2-150, windowHeight/2+40);
-}
-
-  if(gameState === 4){
+  if (gameState === 1) {
+    //controls
     textFont(font);
     textSize(30);
     fill("white");
-    text("Controls:", windowWidth/49, windowHeight/3-225);
-    
-    gun.addImage("duh", gunImg);
-  
+    text("Controls:", windowWidth / 49, windowHeight / 3 - 225);
+
+    //controls images
     up.addImage("lol", up_arr);
     fill("white");
-    text("- Shoot", windowWidth/19-10, windowHeight/3-160);
+    text("- Shoot", windowWidth / 19 - 10, windowHeight / 3 - 160);
     down.addImage("lmao", down_arr);
     fill("white");
-    text("- Jump", windowWidth/19-10, windowHeight/3-125);
+    text("- Jump", windowWidth / 19 - 10, windowHeight / 3 - 125);
     left.addImage("coffin", left_arr);
     fill("white");
-    text("- Move Right", windowWidth/19-10, windowHeight/3-90);
+    text("- Move Right", windowWidth / 19 - 10, windowHeight / 3 - 90);
     right.addImage("wide_putin", right_arr);
     fill("white");
-    text("- Move Left", windowWidth/19-10, windowHeight/3-55);
-  
+    text("- Move Left", windowWidth / 19 - 10, windowHeight / 3 - 55);
+
+    //add gun image
+    gun.addImage("duh", gunImg);
+
+    //make player collide with invisible ground
     player.collide(invis_ground);
-  
-    if(keyDown("d")){
+
+    //player movement
+    if (keyDown("d")) {
       player.x = player.x + 5;
-  } 
-  
-    else if(keyDown("a")){
+    } else if (keyDown("a")) {
       player.x = player.x - 5;
-  } 
-  
-    else if(keyDown("space") && player.y >= windowHeight/2+265){
+    } else if (keyDown("space") && player.y >= windowHeight / 2 + 265) {
       player.velocityY = -18;
       jumpSound.play();
-  } 
-    
-    if(mousePressedOver(invis_canvas) && frameCount % 45 === 0){
-      laser = createSprite(gun.x+37, gun.y-4, 10, 10);
+    }
+
+    //shooting
+    if (mousePressedOver(invis_canvas) && frameCount % 45 === 0) {
+      laser = createSprite(gun.x + 37, gun.y - 4, 10, 10);
       laser.addImage("bruh", laserImg);
       laser.velocityX = 8;
       lasermusic.play();
-  }
-    
+    }
+
+    //gun x and y pos
     gun.x = player.x + 23;
     gun.y = player.y + 5;
-  
+
+    //add gravity
     player.velocityY = player.velocityY + 0.8;
-  
+
+    //set laser collider
     laser.setCollider("rectangle", 19, 0, 125, 30);
-  
-    if(energy_count === 30){
-      time1.x = windowWidth/3+230;
+
+    //time machine part 1 display
+    if (energy_count === 20) {
+      time1.x = windowWidth / 3 + 230;
       time1.addImage("part1", t1Img);
     }
-   if(player.collide(time1)){
-     time1.lifetime = 0;
-     part_count = part_count - 1;
-     partSound.play();
-     time1Puzzle = createSprite(windowWidth/2 + 717, windowHeight/3 - 165, 1, 1);
-     time1Puzzle.addImage("time1", t1Img);
-     time1Puzzle.lifetime = -1; 
-   }
-  
-   if(energy_count === 60){
-     time2.x = windowWidth/5-100;
-     time2.addImage("part2", t2Img);
-   }
-  
-   if(player.collide(time2)){
-     time2.lifetime = 0;
-     part_count = part_count - 1;
-     partSound.play();
-     time2Puzzle = createSprite(windowWidth/2 + 660, windowHeight/3 - 140, 1, 1);
-     time2Puzzle.addImage("time2", t2Img);
-     time2Puzzle.lifetime = -1;
-   }
-  
-   if(energy_count === 90){
-     time3.x = windowWidth - 100;
-     time3.addImage("part3", t3Img);
-   }
-   if(player.collide(time3)){
-     time3.lifetime = 0;
-     part_count = part_count - 1;
-     partSound.play();
-     time3Puzzle = createSprite(windowWidth/2 + 717, windowHeight/3 - 170, 1, 1);
-     time3Puzzle.addImage("time3", t3Img);
-     time3Puzzle.lifetime = -1;
-   }
-  
-   if(energy_count === 120){
-     time4.x = windowWidth-500;
-     time4.addImage("part4", t4Img);
-  }
-  
-  if(player.collide(time4)){
-    time4.lifetime = 0;
-    part_count = part_count - 1;
-    partSound.play();
-    time4Puzzle = createSprite(windowWidth/2 + 717, windowHeight/3 - 220, 1, 1);
-    time4Puzzle.addImage("time4", t4Img);
-    time4Puzzle.lifetime = -1;
-  }
-  
-  if(laser.isTouching(zombieGroup)){
-    laser.visible = false;
-    zombie.visible = false;
-    zombie.lifetime = 0;
-    zombieDie.play();
-  }
-  
-  if(laser.collide(zombieGroup)){
-    energy_count = energy_count + 5;
-  }
-  
+    if (player.collide(time1)) {
+      time1.lifetime = 0;
+      part_count = part_count - 1;
+      partSound.play();
+      time1Puzzle = createSprite(
+        windowWidth / 2 + 717,
+        windowHeight / 3 - 165,
+        1,
+        1
+      );
+      time1Puzzle.addImage("time1", t1Img);
+      time1Puzzle.lifetime = -1;
+    }
+
+    //time machine part 2 display
+    if (energy_count === 40) {
+      time2.x = windowWidth / 5 - 100;
+      time2.addImage("part2", t2Img);
+    }
+
+    if (player.collide(time2)) {
+      time2.lifetime = 0;
+      part_count = part_count - 1;
+      partSound.play();
+      time2Puzzle = createSprite(
+        windowWidth / 2 + 660,
+        windowHeight / 3 - 140,
+        1,
+        1
+      );
+      time2Puzzle.addImage("time2", t2Img);
+      time2Puzzle.lifetime = -1;
+    }
+
+    //time machine part 3 display
+    if (energy_count === 60) {
+      time3.x = windowWidth - 100;
+      time3.addImage("part3", t3Img);
+    }
+    if (player.collide(time3)) {
+      time3.lifetime = 0;
+      part_count = part_count - 1;
+      partSound.play();
+      time3Puzzle = createSprite(
+        windowWidth / 2 + 717,
+        windowHeight / 3 - 170,
+        1,
+        1
+      );
+      time3Puzzle.addImage("time3", t3Img);
+      time3Puzzle.lifetime = -1;
+    }
+
+    //time machine part 4 display
+    if (energy_count === 80) {
+      time4.x = windowWidth - 500;
+      time4.addImage("part4", t4Img);
+    }
+
+    if (player.collide(time4)) {
+      time4.lifetime = 0;
+      part_count = part_count - 1;
+      partSound.play();
+      time4Puzzle = createSprite(
+        windowWidth / 2 + 717,
+        windowHeight / 3 - 220,
+        1,
+        1
+      );
+      time4Puzzle.addImage("time4", t4Img);
+      time4Puzzle.lifetime = -1;
+    }
+
+    //zombie death
+    if (laser.isTouching(zombieGroup)) {
+      laser.visible = false;
+      zombie.visible = false;
+      zombie.lifetime = 0;
+      zombieDie.play();
+    }
+
+    //point increment
+    if (laser.collide(zombieGroup)) {
+      energy_count = energy_count + 5;
+    }
+
+    //call function to spawn zombies
     createZombie();
-  
+
+    //display number lives of
     textSize(30);
-    text(lives, windowWidth/2, windowHeight/3-40);
-  
+    text(lives, windowWidth / 2, windowHeight / 3 - 40);
+
+    //display amount of energy
     textSize(50);
-    text(energy_count, light.x+18, light.y+12);
-  
+    text(energy_count, light.x + 18, light.y + 12);
+
+    //display number of parts to be collected
     textSize(30);
-    text("Parts Missing : " + part_count, windowWidth-370, windowHeight/3-196);
-  
-    drawSprites();
-  
-  if(part_count === 0){
-    gameState = 5;
-  }
-  
-    if(zombieGroup.collide(player)){
+    text(
+      "Parts Missing : " + part_count,
+      windowWidth - 370,
+      windowHeight / 3 - 196
+    );
+
+    //win condition
+    if (part_count === 0) {
+      gameState = 3;
+    }
+
+    //player lose life condition
+    if (zombieGroup.collide(player)) {
       zombieGroup.lifetime = 0;
       zombieGroup.destroyEach();
       lives = lives - 1;
       lifeLose.play();
     }
-  
-    if(lives === 0){
-    gameState = 2;
-   }
+
+    //losing condition
+    if (lives === 0) {
+      gameState = 2;
+    }
   }
 
-  if(gameState === 5){
+  //win sequence for easy mode
+  if (gameState === 3) {
     background(backg2);
     fill("black");
 
     textSize(30);
     textFont(font);
 
-    text("You Win!", windowWidth/2-100, windowHeight/2);
-    text("You are back to your normal life!", windowWidth/2-150, windowHeight/2+40);
+    text("You Win!", windowWidth / 2 - 100, windowHeight / 2);
+    text(
+      "You are back to your normal life!",
+      windowWidth / 2 - 150,
+      windowHeight / 2 + 40
+    );
   }
 
-  if(gameState === 6){
+  //Intermediate mode Gameplay
+  if (gameState === 4) {
     textFont(font);
     textSize(30);
     fill("white");
-    text("Controls:", windowWidth/49, windowHeight/3-225);
-    
+    text("Controls:", windowWidth / 49, windowHeight / 3 - 225);
+
     gun.addImage("duh", gunImg);
-  
+
     up.addImage("lol", up_arr);
     fill("white");
-    text("- Shoot", windowWidth/19-10, windowHeight/3-160);
+    text("- Shoot", windowWidth / 19 - 10, windowHeight / 3 - 160);
     down.addImage("lmao", down_arr);
     fill("white");
-    text("- Jump", windowWidth/19-10, windowHeight/3-125);
+    text("- Jump", windowWidth / 19 - 10, windowHeight / 3 - 125);
     left.addImage("coffin", left_arr);
     fill("white");
-    text("- Move Right", windowWidth/19-10, windowHeight/3-90);
+    text("- Move Right", windowWidth / 19 - 10, windowHeight / 3 - 90);
     right.addImage("wide_putin", right_arr);
     fill("white");
-    text("- Move Left", windowWidth/19-10, windowHeight/3-55);
-  
+    text("- Move Left", windowWidth / 19 - 10, windowHeight / 3 - 55);
+
     player.collide(invis_ground);
-  
-    if(keyDown("d")){
+
+    if (keyDown("d")) {
       player.x = player.x + 5;
-  } 
-  
-    else if(keyDown("a")){
+    } else if (keyDown("a")) {
       player.x = player.x - 5;
-  } 
-  
-    else if(keyDown("space") && player.y >= windowHeight/2+265){
+    } else if (keyDown("space") && player.y >= windowHeight / 2 + 265) {
       player.velocityY = -18;
       jumpSound.play();
-  } 
-    
-    if(mousePressedOver(invis_canvas) && frameCount % 45 === 0){
-      laser = createSprite(gun.x+37, gun.y-4, 10, 10);
+    }
+
+    if (mousePressedOver(invis_canvas) && frameCount % 45 === 0) {
+      laser = createSprite(gun.x + 37, gun.y - 4, 10, 10);
       laser.addImage("bruh", laserImg);
       laser.velocityX = 8;
       lasermusic.play();
-  }
-    
+    }
+
     gun.x = player.x + 23;
     gun.y = player.y + 5;
-  
+
     player.velocityY = player.velocityY + 0.8;
-  
+
     laser.setCollider("rectangle", 19, 0, 125, 30);
-  
-    if(energy_count === 40){
-      time1.x = windowWidth/3+230;
+
+    if (energy_count === 30) {
+      time1.x = windowWidth / 3 + 230;
       time1.addImage("part1", t1Img);
     }
-   if(player.collide(time1)){
-     time1.lifetime = 0;
-     part_count = part_count - 1;
-     partSound.play();
-     time1Puzzle = createSprite(windowWidth/2 + 717, windowHeight/3 - 165, 1, 1);
-     time1Puzzle.addImage("time1", t1Img);
-     time1Puzzle.lifetime = -1; 
-   }
-  
-   if(energy_count === 80){
-     time2.x = windowWidth/5-100;
-     time2.addImage("part2", t2Img);
-   }
-  
-   if(player.collide(time2)){
-     time2.lifetime = 0;
-     part_count = part_count - 1;
-     partSound.play();
-     time2Puzzle = createSprite(windowWidth/2 + 660, windowHeight/3 - 140, 1, 1);
-     time2Puzzle.addImage("time2", t2Img);
-     time2Puzzle.lifetime = -1;
-   }
-  
-   if(energy_count === 120){
-     time3.x = windowWidth - 120;
-     time3.addImage("part3", t3Img);
-   }
-   if(player.collide(time3)){
-     time3.lifetime = 0;
-     part_count = part_count - 1;
-     partSound.play();
-     time3Puzzle = createSprite(windowWidth/2 + 717, windowHeight/3 - 170, 1, 1);
-     time3Puzzle.addImage("time3", t3Img);
-     time3Puzzle.lifetime = -1;
-   }
-  
-   if(energy_count === 160){
-     time4.x = windowWidth-500;
-     time4.addImage("part4", t4Img);
-  }
-  
-  if(player.collide(time4)){
-    time4.lifetime = 0;
-    part_count = part_count - 1;
-    partSound.play();
-    time4Puzzle = createSprite(windowWidth/2 + 717, windowHeight/3 - 220, 1, 1);
-    time4Puzzle.addImage("time4", t4Img);
-    time4Puzzle.lifetime = -1;
-  }
-  
-  if(laser.isTouching(zombieGroup)){
-    laser.visible = false;
-    zombie.visible = false;
-    zombie.lifetime = 0;
-    zombieDie.play();
-  }
-  
-  if(laser.collide(zombieGroup)){
-    energy_count = energy_count + 5;
-  }
-  
+    if (player.collide(time1)) {
+      time1.lifetime = 0;
+      part_count = part_count - 1;
+      partSound.play();
+      time1Puzzle = createSprite(
+        windowWidth / 2 + 717,
+        windowHeight / 3 - 165,
+        1,
+        1
+      );
+      time1Puzzle.addImage("time1", t1Img);
+      time1Puzzle.lifetime = -1;
+    }
+
+    if (energy_count === 60) {
+      time2.x = windowWidth / 5 - 100;
+      time2.addImage("part2", t2Img);
+    }
+
+    if (player.collide(time2)) {
+      time2.lifetime = 0;
+      part_count = part_count - 1;
+      partSound.play();
+      time2Puzzle = createSprite(
+        windowWidth / 2 + 660,
+        windowHeight / 3 - 140,
+        1,
+        1
+      );
+      time2Puzzle.addImage("time2", t2Img);
+      time2Puzzle.lifetime = -1;
+    }
+
+    if (energy_count === 90) {
+      time3.x = windowWidth - 100;
+      time3.addImage("part3", t3Img);
+    }
+    if (player.collide(time3)) {
+      time3.lifetime = 0;
+      part_count = part_count - 1;
+      partSound.play();
+      time3Puzzle = createSprite(
+        windowWidth / 2 + 717,
+        windowHeight / 3 - 170,
+        1,
+        1
+      );
+      time3Puzzle.addImage("time3", t3Img);
+      time3Puzzle.lifetime = -1;
+    }
+
+    if (energy_count === 120) {
+      time4.x = windowWidth - 500;
+      time4.addImage("part4", t4Img);
+    }
+
+    if (player.collide(time4)) {
+      time4.lifetime = 0;
+      part_count = part_count - 1;
+      partSound.play();
+      time4Puzzle = createSprite(
+        windowWidth / 2 + 717,
+        windowHeight / 3 - 220,
+        1,
+        1
+      );
+      time4Puzzle.addImage("time4", t4Img);
+      time4Puzzle.lifetime = -1;
+    }
+
+    if (laser.isTouching(zombieGroup)) {
+      laser.visible = false;
+      zombie.visible = false;
+      zombie.lifetime = 0;
+      zombieDie.play();
+    }
+
+    if (laser.collide(zombieGroup)) {
+      energy_count = energy_count + 5;
+    }
+
     createZombie();
-  
+
     textSize(30);
-    text(lives, windowWidth/2, windowHeight/3-40);
-  
+    text(lives, windowWidth / 2, windowHeight / 3 - 40);
+
     textSize(50);
-    text(energy_count, light.x+18, light.y+12);
-  
+    text(energy_count, light.x + 18, light.y + 12);
+
     textSize(30);
-    text("Parts Missing : " + part_count, windowWidth-370, windowHeight/3-196);
-  
+    text(
+      "Parts Missing : " + part_count,
+      windowWidth - 370,
+      windowHeight / 3 - 196
+    );
+
     drawSprites();
-  
-  if(part_count === 0){
-    gameState = 7;
-  }
-  
-    if(zombieGroup.collide(player)){
+
+    if (part_count === 0) {
+      gameState = 5;
+    }
+
+    if (zombieGroup.collide(player)) {
       zombieGroup.lifetime = 0;
       zombieGroup.destroyEach();
       lives = lives - 1;
       lifeLose.play();
     }
-  
-    if(lives === 0){
-    gameState = 2;
-   }
+
+    if (lives === 0) {
+      gameState = 2;
+    }
   }
 
-  if(gameState === 7){
+  if (gameState === 5) {
     background(backg2);
     fill("black");
 
     textSize(30);
     textFont(font);
 
-    text("You Win!", windowWidth/2-100, windowHeight/2);
-    text("You are back to your normal life!", windowWidth/2-150, windowHeight/2+40);
+    text("You Win!", windowWidth / 2 - 100, windowHeight / 2);
+    text(
+      "You are back to your normal life!",
+      windowWidth / 2 - 150,
+      windowHeight / 2 + 40
+    );
   }
 
-  if(gameState === 8){
+  if (gameState === 6) {
     textFont(font);
     textSize(30);
     fill("white");
-    text("Controls:", windowWidth/49, windowHeight/3-225);
-    
+    text("Controls:", windowWidth / 49, windowHeight / 3 - 225);
+
     gun.addImage("duh", gunImg);
-  
+
     up.addImage("lol", up_arr);
     fill("white");
-    text("- Shoot", windowWidth/19-10, windowHeight/3-160);
+    text("- Shoot", windowWidth / 19 - 10, windowHeight / 3 - 160);
     down.addImage("lmao", down_arr);
     fill("white");
-    text("- Jump", windowWidth/19-10, windowHeight/3-125);
+    text("- Jump", windowWidth / 19 - 10, windowHeight / 3 - 125);
     left.addImage("coffin", left_arr);
     fill("white");
-    text("- Move Right", windowWidth/19-10, windowHeight/3-90);
+    text("- Move Right", windowWidth / 19 - 10, windowHeight / 3 - 90);
     right.addImage("wide_putin", right_arr);
     fill("white");
-    text("- Move Left", windowWidth/19-10, windowHeight/3-55);
-  
+    text("- Move Left", windowWidth / 19 - 10, windowHeight / 3 - 55);
+
     player.collide(invis_ground);
-  
-    if(keyDown("d")){
+
+    if (keyDown("d")) {
       player.x = player.x + 5;
-  } 
-  
-    else if(keyDown("a")){
+    } else if (keyDown("a")) {
       player.x = player.x - 5;
-  } 
-  
-    else if(keyDown("space") && player.y >= windowHeight/2+265){
+    } else if (keyDown("space") && player.y >= windowHeight / 2 + 265) {
       player.velocityY = -18;
       jumpSound.play();
-  } 
-    
-    if(mousePressedOver(invis_canvas) && frameCount % 45 === 0){
-      laser = createSprite(gun.x+37, gun.y-4, 10, 10);
+    }
+
+    if (mousePressedOver(invis_canvas) && frameCount % 45 === 0) {
+      laser = createSprite(gun.x + 37, gun.y - 4, 10, 10);
       laser.addImage("bruh", laserImg);
       laser.velocityX = 8;
       lasermusic.play();
-  }
-    
+    }
+
     gun.x = player.x + 23;
     gun.y = player.y + 5;
-  
+
     player.velocityY = player.velocityY + 0.8;
-  
+
     laser.setCollider("rectangle", 19, 0, 125, 30);
-  
-    if(energy_count === 50){
-      time1.x = windowWidth/3+230;
+
+    if (energy_count === 40) {
+      time1.x = windowWidth / 3 + 230;
       time1.addImage("part1", t1Img);
     }
-   if(player.collide(time1)){
-     time1.lifetime = 0;
-     part_count = part_count - 1;
-     partSound.play();
-     time1Puzzle = createSprite(windowWidth/2 + 717, windowHeight/3 - 165, 1, 1);
-     time1Puzzle.addImage("time1", t1Img);
-     time1Puzzle.lifetime = -1; 
-   }
-  
-   if(energy_count === 100){
-     time2.x = windowWidth/5-100;
-     time2.addImage("part2", t2Img);
-   }
-  
-   if(player.collide(time2)){
-     time2.lifetime = 0;
-     part_count = part_count - 1;
-     partSound.play();
-     time2Puzzle = createSprite(windowWidth/2 + 660, windowHeight/3 - 140, 1, 1);
-     time2Puzzle.addImage("time2", t2Img);
-     time2Puzzle.lifetime = -1;
-   }
-  
-   if(energy_count === 150){
-     time3.x = windowWidth - 100;
-     time3.addImage("part3", t3Img);
-   }
-   if(player.collide(time3)){
-     time3.lifetime = 0;
-     part_count = part_count - 1;
-     partSound.play();
-     time3Puzzle = createSprite(windowWidth/2 + 717, windowHeight/3 - 170, 1, 1);
-     time3Puzzle.addImage("time3", t3Img);
-     time3Puzzle.lifetime = -1;
-   }
-  
-   if(energy_count === 200){
-     time4.x = windowWidth-500;
-     time4.addImage("part4", t4Img);
-  }
-  
-  if(player.collide(time4)){
-    time4.lifetime = 0;
-    part_count = part_count - 1;
-    partSound.play();
-    time4Puzzle = createSprite(windowWidth/2 + 717, windowHeight/3 - 220, 1, 1);
-    time4Puzzle.addImage("time4", t4Img);
-    time4Puzzle.lifetime = -1;
-  }
-  
-  if(laser.isTouching(zombieGroup)){
-    laser.visible = false;
-    zombie.visible = false;
-    zombie.lifetime = 0;
-    zombieDie.play();
-  }
-  
-  if(laser.collide(zombieGroup)){
-    energy_count = energy_count + 5;
-  }
-  
+    if (player.collide(time1)) {
+      time1.lifetime = 0;
+      part_count = part_count - 1;
+      partSound.play();
+      time1Puzzle = createSprite(
+        windowWidth / 2 + 717,
+        windowHeight / 3 - 165,
+        1,
+        1
+      );
+      time1Puzzle.addImage("time1", t1Img);
+      time1Puzzle.lifetime = -1;
+    }
+
+    if (energy_count === 80) {
+      time2.x = windowWidth / 5 - 100;
+      time2.addImage("part2", t2Img);
+    }
+
+    if (player.collide(time2)) {
+      time2.lifetime = 0;
+      part_count = part_count - 1;
+      partSound.play();
+      time2Puzzle = createSprite(
+        windowWidth / 2 + 660,
+        windowHeight / 3 - 140,
+        1,
+        1
+      );
+      time2Puzzle.addImage("time2", t2Img);
+      time2Puzzle.lifetime = -1;
+    }
+
+    if (energy_count === 120) {
+      time3.x = windowWidth - 120;
+      time3.addImage("part3", t3Img);
+    }
+    if (player.collide(time3)) {
+      time3.lifetime = 0;
+      part_count = part_count - 1;
+      partSound.play();
+      time3Puzzle = createSprite(
+        windowWidth / 2 + 717,
+        windowHeight / 3 - 170,
+        1,
+        1
+      );
+      time3Puzzle.addImage("time3", t3Img);
+      time3Puzzle.lifetime = -1;
+    }
+
+    if (energy_count === 160) {
+      time4.x = windowWidth - 500;
+      time4.addImage("part4", t4Img);
+    }
+
+    if (player.collide(time4)) {
+      time4.lifetime = 0;
+      part_count = part_count - 1;
+      partSound.play();
+      time4Puzzle = createSprite(
+        windowWidth / 2 + 717,
+        windowHeight / 3 - 220,
+        1,
+        1
+      );
+      time4Puzzle.addImage("time4", t4Img);
+      time4Puzzle.lifetime = -1;
+    }
+
+    if (laser.isTouching(zombieGroup)) {
+      laser.visible = false;
+      zombie.visible = false;
+      zombie.lifetime = 0;
+      zombieDie.play();
+    }
+
+    if (laser.collide(zombieGroup)) {
+      energy_count = energy_count + 5;
+    }
+
     createZombie();
-  
+
     textSize(30);
-    text(lives, windowWidth/2, windowHeight/3-40);
-  
+    text(lives, windowWidth / 2, windowHeight / 3 - 40);
+
     textSize(50);
-    text(energy_count, light.x+18, light.y+12);
-  
+    text(energy_count, light.x + 18, light.y + 12);
+
     textSize(30);
-    text("Parts Missing : " + part_count, windowWidth-370, windowHeight/3-196);
-  
+    text(
+      "Parts Missing : " + part_count,
+      windowWidth - 370,
+      windowHeight / 3 - 196
+    );
+
     drawSprites();
-  
-  if(part_count === 0){
-    gameState = 9;
-  }
-  
-    if(zombieGroup.collide(player)){
+
+    if (part_count === 0) {
+      gameState = 7;
+    }
+
+    if (zombieGroup.collide(player)) {
       zombieGroup.lifetime = 0;
       zombieGroup.destroyEach();
       lives = lives - 1;
       lifeLose.play();
     }
-  
-    if(lives === 0){
-    gameState = 2;
-   }
+
+    if (lives === 0) {
+      gameState = 2;
+    }
   }
 
-  if(gameState === 9){
+  if (gameState === 7) {
     background(backg2);
     fill("black");
 
     textSize(30);
     textFont(font);
 
-    text("You Win!", windowWidth/2-100, windowHeight/2);
-    text("You are back to your normal life!", windowWidth/2-150, windowHeight/2+40);
+    text("You Win!", windowWidth / 2 - 100, windowHeight / 2);
+    text(
+      "You are back to your normal life!",
+      windowWidth / 2 - 150,
+      windowHeight / 2 + 40
+    );
   }
 
-   if(gameState === 2){
+  if (gameState === 8) {
+    textFont(font);
+    textSize(30);
+    fill("white");
+    text("Controls:", windowWidth / 49, windowHeight / 3 - 225);
+
+    gun.addImage("duh", gunImg);
+
+    up.addImage("lol", up_arr);
+    fill("white");
+    text("- Shoot", windowWidth / 19 - 10, windowHeight / 3 - 160);
+    down.addImage("lmao", down_arr);
+    fill("white");
+    text("- Jump", windowWidth / 19 - 10, windowHeight / 3 - 125);
+    left.addImage("coffin", left_arr);
+    fill("white");
+    text("- Move Right", windowWidth / 19 - 10, windowHeight / 3 - 90);
+    right.addImage("wide_putin", right_arr);
+    fill("white");
+    text("- Move Left", windowWidth / 19 - 10, windowHeight / 3 - 55);
+
+    player.collide(invis_ground);
+
+    if (keyDown("d")) {
+      player.x = player.x + 5;
+    } else if (keyDown("a")) {
+      player.x = player.x - 5;
+    } else if (keyDown("space") && player.y >= windowHeight / 2 + 265) {
+      player.velocityY = -18;
+      jumpSound.play();
+    }
+
+    if (mousePressedOver(invis_canvas) && frameCount % 45 === 0) {
+      laser = createSprite(gun.x + 37, gun.y - 4, 10, 10);
+      laser.addImage("bruh", laserImg);
+      laser.velocityX = 8;
+      lasermusic.play();
+    }
+
+    gun.x = player.x + 23;
+    gun.y = player.y + 5;
+
+    player.velocityY = player.velocityY + 0.8;
+
+    laser.setCollider("rectangle", 19, 0, 125, 30);
+
+    if (energy_count === 50) {
+      time1.x = windowWidth / 3 + 230;
+      time1.addImage("part1", t1Img);
+    }
+    if (player.collide(time1)) {
+      time1.lifetime = 0;
+      part_count = part_count - 1;
+      partSound.play();
+      time1Puzzle = createSprite(
+        windowWidth / 2 + 717,
+        windowHeight / 3 - 165,
+        1,
+        1
+      );
+      time1Puzzle.addImage("time1", t1Img);
+      time1Puzzle.lifetime = -1;
+    }
+
+    if (energy_count === 100) {
+      time2.x = windowWidth / 5 - 100;
+      time2.addImage("part2", t2Img);
+    }
+
+    if (player.collide(time2)) {
+      time2.lifetime = 0;
+      part_count = part_count - 1;
+      partSound.play();
+      time2Puzzle = createSprite(
+        windowWidth / 2 + 660,
+        windowHeight / 3 - 140,
+        1,
+        1
+      );
+      time2Puzzle.addImage("time2", t2Img);
+      time2Puzzle.lifetime = -1;
+    }
+
+    if (energy_count === 150) {
+      time3.x = windowWidth - 100;
+      time3.addImage("part3", t3Img);
+    }
+    if (player.collide(time3)) {
+      time3.lifetime = 0;
+      part_count = part_count - 1;
+      partSound.play();
+      time3Puzzle = createSprite(
+        windowWidth / 2 + 717,
+        windowHeight / 3 - 170,
+        1,
+        1
+      );
+      time3Puzzle.addImage("time3", t3Img);
+      time3Puzzle.lifetime = -1;
+    }
+
+    if (energy_count === 200) {
+      time4.x = windowWidth - 500;
+      time4.addImage("part4", t4Img);
+    }
+
+    if (player.collide(time4)) {
+      time4.lifetime = 0;
+      part_count = part_count - 1;
+      partSound.play();
+      time4Puzzle = createSprite(
+        windowWidth / 2 + 717,
+        windowHeight / 3 - 220,
+        1,
+        1
+      );
+      time4Puzzle.addImage("time4", t4Img);
+      time4Puzzle.lifetime = -1;
+    }
+
+    if (laser.isTouching(zombieGroup)) {
+      laser.visible = false;
+      zombie.visible = false;
+      zombie.lifetime = 0;
+      zombieDie.play();
+    }
+
+    if (laser.collide(zombieGroup)) {
+      energy_count = energy_count + 5;
+    }
+
+    createZombie();
+
+    textSize(30);
+    text(lives, windowWidth / 2, windowHeight / 3 - 40);
+
+    textSize(50);
+    text(energy_count, light.x + 18, light.y + 12);
+
+    textSize(30);
+    text(
+      "Parts Missing : " + part_count,
+      windowWidth - 370,
+      windowHeight / 3 - 196
+    );
+
+    drawSprites();
+
+    if (part_count === 0) {
+      gameState = 9;
+    }
+
+    if (zombieGroup.collide(player)) {
+      zombieGroup.lifetime = 0;
+      zombieGroup.destroyEach();
+      lives = lives - 1;
+      lifeLose.play();
+    }
+
+    if (lives === 0) {
+      gameState = 2;
+    }
+  }
+
+  if (gameState === 9) {
+    background(backg2);
+    fill("black");
+
+    textSize(30);
+    textFont(font);
+
+    text("You Win!", windowWidth / 2 - 100, windowHeight / 2);
+    text(
+      "You are back to your normal life!",
+      windowWidth / 2 - 150,
+      windowHeight / 2 + 40
+    );
+  }
+
+  if (gameState === 2) {
     player.destroy();
-    player.visible = false;   
+    player.visible = false;
     gun.destroy();
     gun.visible = false;
     laser.destroy();
@@ -785,22 +927,76 @@ if(part_count === 0){
     fill("white");
     textFont(font);
     textSize(60);
-    text("GAME OVER", windowWidth/2-180, windowHeight/2-100);
-    
+    text("GAME OVER", windowWidth / 2 - 180, windowHeight / 2 - 100);
+
     textSize(45);
-    text("Score: " + energy_count, windowWidth/2-90, windowHeight/2-40);
+    text("Score: " + energy_count, windowWidth / 2 - 90, windowHeight / 2 - 40);
   }
 }
 
-//define function zombie
+//define function createZombie
 function createZombie() {
-  if(frameCount % 130 === 0){
-    zombie = createSprite(windowWidth/2+100, windowHeight/2-360, 10, 100);
+  if (frameCount % 130 === 0) {
+    zombie = createSprite(
+      windowWidth / 2 + 100,
+      windowHeight / 2 - 360,
+      10,
+      100
+    );
     zombie.addAnimation("anima", zomAnima);
-    zombie.x = Math.round(random(windowWidth/2+370, windowWidth));
-    zombie.y = Math.round(windowHeight/2+309);
+    zombie.x = Math.round(random(windowWidth / 2 + 370, windowWidth));
+    zombie.y = Math.round(windowHeight / 2 + 309);
     zombie.velocityX = -6;
     zombie.setCollider("rectangle", 0, 0, 75, 130);
     zombieGroup.add(zombie);
   }
- }
+}
+
+//define function createKnight
+function createKnight() {
+  if (frameCount % 120 === 0) {
+    knight = createSprite(
+      windowWidth / 2 + 100,
+      windowHeight / 2 - 360,
+      10,
+      100
+    );
+    knight.addAnimation("anima", knightAnima);
+    knight.x = Math.round(random(windowWidth / 2 + 370, windowWidth));
+    knight.y = Math.round(windowHeight / 2 + 309);
+    knight.velocityX = -6;
+    knight.setCollider("rectangle", 0, 0, 75, 130);
+    knightGroup.add(knight);
+  }
+}
+
+//define function createDinosaur1
+function createDinosaur1() {
+  if (frameCount % 110 === 0) {
+    dinosaur = createSprite(
+      windowWidth / 2 + 100,
+      windowHeight / 2 - 360,
+      10,
+      100
+    );
+    switch (rand) {
+      case 1:
+        dinosaur.addAnimation("dino 1", dino1);
+        break;
+      case 2:
+        dinosaur.addAnimation("dino 2", dino2);
+        break;
+      case 3:
+        dinosaur.addAnimation("dino 3", dino3);
+        break;
+      default:
+        break;
+    }
+
+    dinosaur.x = Math.round(random(windowWidth / 2 + 370, windowWidth));
+    dinosaur.y = Math.round(windowHeight / 2 + 309);
+    dinosaur.velocityX = -6;
+    dinosaur.setCollider("rectangle", 0, 0, 75, 130);
+    dinosaurGroup.add(dinosaur);
+  }
+}
